@@ -1,0 +1,25 @@
+$spotifyGreen1: #1fdf64;
+$spotifyGreen2: #1ed760;
+$spotifyDark: #191414;
+
+
+.trackSearchResult{
+    display: flex;
+    align-items: center;
+    margin: 1rem;
+    background-color: $spotifyGreen1;
+
+    img{
+        margin: 1rem;
+        max-height: 64px;
+        max-width: 64px;
+    }
+}
+
+.text{
+    margin-left: 2rem;
+
+    .title{
+        font-size: 1.6rem;
+    }
+}
