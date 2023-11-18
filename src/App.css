@@ -1,8 +1,18 @@
 body{
-  background-color: #282c34;
+  background-color: #191414;
   min-height: 100vh;
 }
-
+a{
+  width: 2rem;
+  height: 1rem;
+  background-color: #1fdf64;
+  text-decoration: none;
+  padding: 1rem;
+  border-radius: 500px;
+  color: black;
+  margin: 1rem;
+  box-shadow: 0px 0px 15px 5px #1ed760;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -10,7 +20,7 @@ body{
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #191414;
   margin-top: 10rem;
   display: flex;
   flex-direction: column;
@@ -58,5 +68,10 @@ body{
   margin: 1rem;
   display: flex;
   justify-content: center;
+}
+
+#card img{
+  max-width: 250px;
+  max-height: 250px;
 }
 
