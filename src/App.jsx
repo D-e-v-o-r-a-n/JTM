@@ -23,7 +23,7 @@ function App() {
   const [appStarted, setAppStarted] = useState(false)
   const [playback, setPlayback] = useState()
   const [tracksPlayed, setTracksPlayed] = useState([])
-  const [allTracks,setAllTracks] = useState()
+  const [allTracks,setAllTracks] = useState(["index"])
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -107,10 +107,14 @@ function App() {
 
 
   async function showTracks(){
-    if (new Set(allTracks).size == 1){
+    if ((allTracks[0] == undefined && allTracks.length == 1) || allTracks.length == 0){
+      console.log(new Set(allTracks)[0])
+      console.log(new Set(allTracks)[0])
+      console.log(new Set(allTracks))
+      console.log(new Set(allTracks).size)
       console.log("thats the end")
     }else{
-      console.log("Długość",new Set(allTracks).size)
+      console.log("Długość",allTracks.length)
       // to działa na taco
       var tracksParams = {
         method: 'GET',
