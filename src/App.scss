@@ -23,6 +23,10 @@ button{
   cursor: pointer;
   font-size: 1rem;
   font-family: 'Kanit', sans-serif;
+  }
+
+.ButtonRSWP{
+  box-shadow: none;
 }
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -76,11 +80,10 @@ a{
 
 #playlistContainer{
   display: grid;
-  grid-template-columns: 10rem 10rem 10rem;
+  grid-template-columns: 30rem 30rem 30rem;
   grid-template-rows: auto;
-  column-gap:27.5rem;
-  margin-left: 10rem;
-  margin-right: 10rem;
+  column-gap: 3rem;
+  place-items: center;
 
   #playlist{
     display: flex;
@@ -107,7 +110,13 @@ a{
     }
   }
 }
-
+#playlistWhole{
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 .visible{
   visibility: visible;
 }

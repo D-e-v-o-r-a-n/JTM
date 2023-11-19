@@ -18,6 +18,12 @@ function App() {
   const [selectedPlaylist,setSelectedPlaylist] = useState(false);
   const [searchInput, setSearchInput] = useState();
   const [searchResult, setSearchResult] = useState([]);
+  const [playTrack, setPlayTrack] = useState(false);
+  const [answerFeedback, setAnswerFeedback] = useState()
+  const [appStarted, setAppStarted] = useState(false)
+  const [playback, setPlayback] = useState()
+  const [tracksPlayed, setTracksPlayed] = useState([])
+  const [allTracks,setAllTracks] = useState()
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -58,8 +64,27 @@ function App() {
   }, [searchInput, spotifyToken])
 
 
+  useEffect(()=>{
+    if(spotifyToken) showPlaylist()
+  },[spotifyToken])
+
+
+  useEffect(()=>{
+    if(appStarted) myBtn.current.style='display: none'
+  }, [appStarted])
+
   async function showPlaylist() {
-     spotify.getUserPlaylists()
+    //  spotify.getUserPlaylists()
+    //   .then(function(data) {
+    //     console.log('User playlists', data);
+    //     setPlaylists(data.items)
+    //     console.log(playlists)
+    //   }, function(err) {
+    //     console.error(err);
+    //   });
+
+    // to działa na taco
+    spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ')
       .then(function(data) {
         console.log('User playlists', data);
         setPlaylists(data.items)
@@ -67,46 +92,125 @@ function App() {
       }, function(err) {
         console.error(err);
       });
+
+
+    
+    // to działa na mnie
+    // spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna')
+    // .then(function(data){
+    //   console.log(data)
+    //   setPlaylists(data.items)
+    // },function(error){
+    //   console.log(error)
+    // })
   }
 
 
   async function showTracks(){
-    var tracksParams = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${spotifyToken}`
+    if (new Set(allTracks).size == 1){
+      console.log("thats the end")
+    }else{
+      console.log("Długość",new Set(allTracks).size)
+      // to działa na taco
+      var tracksParams = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${spotifyToken}`
+        }
       }
+
+      // request for tracks from selected playlists
+      var tracks = await fetch(`https://api.spotify.com/v1/albums/${selectedPlaylist}/tracks`,tracksParams)
+      .then(response => response.json())
+      .then(data => { return data.items})
+
+      // picking a random track from this list
+      const index = Math.floor(Math.random() * tracks.length)
+      const track = tracks[index]
+      setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
+      
+      
+
+      setAllTracks(tracks.map((track)=>{
+        if(!tracksPlayed.includes(track.uri)){
+          console.log("to jest track", track)
+          return track.uri
+          
+        }
+      }))
+      
+
+      // setting the hook values
+      if(!tracksPlayed.includes(track.uri)){
+        setTrackName(track.name)
+        setTrackUri(track.uri)
+
+        setPlayTrack(true)
+
+        setAppStarted(true)
+    
+        let playbackPlayer = setTimeout(()=>{
+          setPlayTrack(false)
+        },20_000)
+        setPlayback(playbackPlayer)
+
+      } else{
+          showTracks()
+      }
+
+      console.log(allTracks, "alltracks")
+      console.log(tracksPlayed, 'tracksplayed')
+      console.log(trackName , 'trackname')
     }
+    // var tracksParams = {
+    //   method: 'GET',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${spotifyToken}`
+    //   }
+    // }
 
-    // request for tracks from selected playlists
-    var tracks = await fetch(`https://api.spotify.com/v1/playlists/${selectedPlaylist}/tracks`,tracksParams)
-    .then(response => response.json())
-    .then(data => { return data.items})
+    // // request for tracks from selected playlists
+    // var tracks = await fetch(`https://api.spotify.com/v1/playlists/${selectedPlaylist}/tracks`,tracksParams)
+    // .then(response => response.json())
+    // .then(data => { return data.items})
 
-    // picking a random track from this list
-    const index = Math.floor(Math.random() * tracks.length)
-    const track = tracks[index].track
+    // // picking a random track from this list
+    // const index = Math.floor(Math.random() * tracks.length)
+    // const track = tracks[index].track
 
-    // setting the hook values
-    setTrackName(track.name)
-    setTrackImage(track.album.images[0].url)
-    setTrackUri(track.uri)
-    setTrackPreview(track?.preview_url)
+    // // setting the hook values
+    // setTrackName(track.name)
+    // setTrackImage(track.album.images[0].url)
+    // setTrackUri(track.uri)
+    // setTrackPreview(track?.preview_url)
 
-  
   }
 
   function submitAnswer(event){
     const answer = event.target.value
 
     if(answer.length > 0 && answer.trim().toLowerCase() == trackName.toLowerCase()){
-      console.log("brawo")
-      myBtn.current.click()
       myInput.current.value = null
-      console.log(trackPreview)
-    }else{
-      console.log("Próbuj dalej")
+      setPlayTrack(false)
+      setAnswerFeedback('Brawo, za 3 sekundy następna piosenka')
+      setAllTracks(current =>
+        current.filter(track => {
+          return track !== trackUri;
+        }))
+      clearTimeout(playback)
+      setTimeout(() => {
+        setAnswerFeedback('')
+        myBtn.current.click()
+      }, 3_000);
+    }
+    else{
+      setAnswerFeedback(" PRÓBUJ DALEJ!")
+      console.log({trackName})
+      setTimeout(()=>{
+        setAnswerFeedback('')
+      }, 2000)
     }
   }
 
@@ -120,21 +224,23 @@ function App() {
       <span id="#"></span>
       <div className="App">
         <header className="App-header">
-          <div style={{ display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }}>
-            <span>{trackName} </span>
-            <img src={trackImage} style={{ height: '100%', maxWidth: '30%' }} />
-            <span> {trackUri}  </span>
-          </div>
-          <a href={loginUrl} id='signInId' style={spotifyToken ? {visibility: 'collapse'} : {}}>Sign in with Spotify</a>
 
-          <div style={ (!spotifyToken ? {visibility: 'collapse'} : {display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem'}) }>
-            <button onClick={showPlaylist} style={!selectedPlaylist ? {display: 'flex', justifyContent: 'center', alignItems: 'center'} : {visibility: 'collapse'}}>Show Playlists</button>
-            <input type="text" name="" id="guessInput" ref={myInput} style={!selectedPlaylist ? {visibility:'collapse'} :{}}  onChange={event => { setSearchInput(event.target.value) }} onKeyDown={event => {
+          <div style={{ display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }}>
+            <h1>Choose one of your playlists and try to guess a song!</h1>
+            <span>For each track you have 20 seconds of listening</span>
+            <h1>{answerFeedback}</h1>
+          </div>
+
+
+          <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}}>Sign in with Spotify</a>
+
+          <div style={ (!spotifyToken ? {display: 'none'} : {display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem'}) }>
+            <input type="text" name="" id="guessInput" ref={myInput} style={(!selectedPlaylist ? {display: 'none'} :{}) && (!appStarted ? {display: 'none'} : {} )}  onChange={event => { setSearchInput(event.target.value) }} onKeyDown={event => {
               if (event.key === 'Enter') {
                 submitAnswer(event)
               }
             }} />
-            <button ref={myBtn} onClick={showTracks} style={!selectedPlaylist ? {visibility:'collapse'} : {display: 'flex', justifyContent: 'center', alignItems: 'center'}}><a href={trackPreview} target={'_blank'}>START</a></button>
+            <button ref={myBtn} onClick={showTracks} style={(!selectedPlaylist ? {display: 'none'} :{})}>START</button>
           </div>
           <div>
             {searchResult.map(track=>(
@@ -144,24 +250,26 @@ function App() {
           </div>
         </header>
       </div>
-
-      <div id='playlistContainer' style={!selectedPlaylist ? {visibility: 'visible'} : {visibility: 'collapse'}}>
-        <span style={{color:' #ffffff'}} hidden={true}>{trackPreview}</span>
-        <a href={trackPreview} target={'_blank'} hidden={true}>Preview</a>
-
-        {playlists.map((playlist=>{
-          return(
-            <div id='playlist'>
-              <span>{playlist.name}</span>
-              <img src={playlist.images[0].url} />
-              <button property={playlist.id} onClick={event=> select(event)} ><a href="#">Select</a></button>
-            </div>
-          )
-        }))}
+      <div style={ !spotifyToken ? {display: 'none'} : {} }>
+        <div id='playlistWhole' style={selectedPlaylist ? {display: 'none'} : {}}>
+          <span>Your playlists</span>
+          <div id='playlistContainer'>
+            {playlists.map((playlist => {
+              return (
+                <div id='playlist'>
+                  <span>{playlist.name}</span>
+                  <img src={playlist.images[0].url} />
+                  <button property={playlist.id} onClick={event => select(event)} ><a href="#">Select</a></button>
+                </div>
+              )
+            }))}
+          </div>
+        </div>
       </div>
-      <span>{selectedPlaylist}</span>
 
-      <Player accessToken={spotifyToken} trackUri={trackUri}/>
+        <div style={{display: 'none'}}>
+          <Player accessToken={spotifyToken} trackUri={trackUri} playTrack={playTrack}/>
+        </div>
     </>
   );
 }
