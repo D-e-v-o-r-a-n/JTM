@@ -24,6 +24,7 @@ function App() {
   const [playback, setPlayback] = useState()
   const [tracksPlayed, setTracksPlayed] = useState([])
   const [allTracks,setAllTracks] = useState(['index'])
+  const [answer, setAnswer] = useState()
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -195,6 +196,7 @@ function App() {
   }
 
   function submitAnswer(event){
+    console.log(event, 'event')
     const answer = event.target.value
 
     if(answer.length > 0 && answer.trim().toLowerCase() == trackName.toLowerCase()){
@@ -225,6 +227,16 @@ function App() {
     setSelectedPlaylist(event.currentTarget.attributes[0]['value'])
   }
 
+  function tamagotchi(answer){
+    setAnswer(answer)
+    myInput.current.value = answer
+    let fakeEvent = {
+      target: {
+        value: answer
+      }
+    }
+    submitAnswer(fakeEvent)
+  }
   return (
     <>
       <span id="#"></span>
@@ -250,7 +262,7 @@ function App() {
           </div>
           <div>
             {searchResult.map(track=>(
-              <TrackSearchResult track={track} key={track.uri} />
+              <TrackSearchResult track={track} key={track.uri} trackFunction={tamagotchi}/>
             ))}
 
           </div>
