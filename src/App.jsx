@@ -107,18 +107,19 @@ function App() {
 
 
   async function showTracks(){
-    if (allTracks[0] == undefined){
+    let setTracks = [...(new Set(allTracks))]
+    if ((setTracks.length == 1 && setTracks[0] == undefined) || setTracks.length == 0){
       console.log("thats the end")
     }else{
-      let set = new Set(allTracks)
-      let setIter = set.entries()
 
 
-      console.log(setIter, "set iter")
-      console.log(setIter.next(), "set iter")
-      console.log("Długość",allTracks.length)
-      console.log( new Set(allTracks), "set")
-      
+      function removeDuplicates(data){
+        return[...new Set(data)]
+      }
+
+
+      setAllTracks([new Set(allTracks)])
+
       // to działa na taco
       var tracksParams = {
         method: 'GET',
@@ -135,7 +136,6 @@ function App() {
 
       // picking a random track from this list
       const index = Math.floor(Math.random() * tracks.length)
-      console.log(index)
       const track = tracks[index]
       setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
       
@@ -168,9 +168,6 @@ function App() {
           showTracks()
       }
 
-      console.log(allTracks, "alltracks")
-      console.log(tracksPlayed, 'tracksplayed')
-      console.log(trackName , 'trackname')
     }
     // var tracksParams = {
     //   method: 'GET',
