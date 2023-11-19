@@ -23,7 +23,7 @@ function App() {
   const [appStarted, setAppStarted] = useState(false)
   const [playback, setPlayback] = useState()
   const [tracksPlayed, setTracksPlayed] = useState([])
-  const [allTracks,setAllTracks] = useState(["index"])
+  const [allTracks,setAllTracks] = useState(['index'])
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -107,14 +107,18 @@ function App() {
 
 
   async function showTracks(){
-    if ((allTracks[0] == undefined && allTracks.length == 1) || allTracks.length == 0){
-      console.log(new Set(allTracks)[0])
-      console.log(new Set(allTracks)[0])
-      console.log(new Set(allTracks))
-      console.log(new Set(allTracks).size)
+    if (allTracks[0] == undefined){
       console.log("thats the end")
     }else{
+      let set = new Set(allTracks)
+      let setIter = set.entries()
+
+
+      console.log(setIter, "set iter")
+      console.log(setIter.next(), "set iter")
       console.log("Długość",allTracks.length)
+      console.log( new Set(allTracks), "set")
+      
       // to działa na taco
       var tracksParams = {
         method: 'GET',
@@ -131,6 +135,7 @@ function App() {
 
       // picking a random track from this list
       const index = Math.floor(Math.random() * tracks.length)
+      console.log(index)
       const track = tracks[index]
       setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
       
