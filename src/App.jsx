@@ -5,6 +5,7 @@ import { loginUrl, getTokenFromUrl } from './spotify';
 import SpotifyWebApi from 'spotify-web-api-js'
 import Player from './Components/Player/Player';
 import TrackSearchResult from './Components/TrackSearchResult/TrackSearchResult';
+import Zoisa from './zoisa';
 
 const spotify = new SpotifyWebApi()
 
@@ -85,118 +86,127 @@ function App() {
     //   });
 
     // to działa na taco
-    spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ')
-      .then(function(data) {
-        console.log('User playlists', data);
-        setPlaylists(data.items)
-        console.log(playlists)
-      }, function(err) {
-        console.error(err);
-      });
+    // spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ')
+    //   .then(function(data) {
+    //     console.log('User playlists', data);
+    //     setPlaylists(data.items)
+    //     console.log(playlists)
+    //   }, function(err) {
+    //     console.error(err);
+    //   });
 
 
     
     // to działa na mnie
-    // spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna')
-    // .then(function(data){
-    //   console.log(data)
-    //   setPlaylists(data.items)
-    // },function(error){
-    //   console.log(error)
-    // })
+    spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna')
+    .then(function(data){
+      console.log(data)
+      setPlaylists(data.items)
+    },function(error){
+      console.log(error)
+    })
+
   }
 
 
   async function showTracks(){
     let setTracks = [...(new Set(allTracks))]
+    console.log(setTracks, ' set tracks')
+
     if ((setTracks.length == 1 && setTracks[0] == undefined) || setTracks.length == 0){
       console.log("thats the end")
     }else{
+      // // to działa na taco
+      // var tracks = await spotify.getAlbumTracks(selectedPlaylist,{limit: 50})
+      // .then(function(data){
+      //   return data.items
+      // }, function(error){
+      //   console.log(error)
+      // })
+      
+      // // picking a random track from this list
+      // const index = Math.floor(Math.random() * (tracks.length - 0 + 1) + 0)
+      // const track = tracks[index]
+      // setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
 
-
-      function removeDuplicates(data){
-        return[...new Set(data)]
-      }
-
-
-      setAllTracks([new Set(allTracks)])
-
-      // to działa na taco
-      var tracksParams = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${spotifyToken}`
-        }
-      }
-
-      // request for tracks from selected playlists
-      var tracks = await fetch(`https://api.spotify.com/v1/albums/${selectedPlaylist}/tracks`,tracksParams)
-      .then(response => response.json())
-      .then(data => { return data.items})
-
-      // picking a random track from this list
-      const index = Math.floor(Math.random() * tracks.length)
-      const track = tracks[index]
-      setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
       
       
-
-      setAllTracks(tracks.map((track)=>{
-        if(!tracksPlayed.includes(track.uri)){
-          console.log("to jest track", track)
-          return track.uri
+      
+      // setAllTracks(tracks.map((track)=>{
+      //   if(!tracksPlayed.includes(track.uri)){
+      //     return track.uri
           
-        }
-      }))
-      
+      //   }
+      // }))
 
-      // setting the hook values
-      if(!tracksPlayed.includes(track.uri)){
-        setTrackName(track.name)
-        setTrackUri(track.uri)
+      // // setting the hook values
+      // if(!tracksPlayed.includes(track.uri)){
+      //   setTrackName(track.name)
+      //   setTrackUri(track.uri)
 
-        setPlayTrack(true)
+      //   setPlayTrack(true)
 
-        setAppStarted(true)
+      //   setAppStarted(true)
     
-        let playbackPlayer = setTimeout(()=>{
-          setPlayTrack(false)
-        },20_000)
-        setPlayback(playbackPlayer)
+      //   let playbackPlayer = setTimeout(()=>{
+      //     setPlayTrack(false)
+      //   },20_000)
+      //   setPlayback(playbackPlayer)
+        
+      // } else{
+      //     showTracks()
+      // }
 
-      } else{
-          showTracks()
-      }
 
+
+          // to działa normalnie, ale potrzebuje update
+      const tracks = await spotify.getPlaylistTracks(selectedPlaylist, { limit: 50 })
+        .then(function (data) {
+          return data.items
+        }, function (error) {
+          console.log(error)
+        })
+
+        // picking a random track from this list
+      const index = Math.floor(Math.random() * (tracks.length - 0 + 1) + 0)
+      const track = tracks[index].track
+      console.log(track.uri, '.uri')
+      setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
+
+      console.log(tracksPlayed, 'tracks played')
+        
+        
+      setAllTracks(tracks.map((track)=>{
+        console.log(track.track, 'track.track inside of map')
+          if(!tracksPlayed.includes(track.track.uri)){
+            return track.track.uri
+            
+          }
+        }))
+        console.log(allTracks, 'allTracks')
+
+        // setting the hook values
+      if(!tracksPlayed.includes(track.uri)){
+         setTrackName(track.name)
+          setTrackUri(track.uri)
+
+          setPlayTrack(true)
+
+          setAppStarted(true)
+      
+          let playbackPlayer = setTimeout(()=>{
+            setPlayTrack(false)
+          },20_000)
+          setPlayback(playbackPlayer)
+          
+        } else{
+            showTracks()
+        }
+         
     }
-    // var tracksParams = {
-    //   method: 'GET',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${spotifyToken}`
-    //   }
-    // }
-
-    // // request for tracks from selected playlists
-    // var tracks = await fetch(`https://api.spotify.com/v1/playlists/${selectedPlaylist}/tracks`,tracksParams)
-    // .then(response => response.json())
-    // .then(data => { return data.items})
-
-    // // picking a random track from this list
-    // const index = Math.floor(Math.random() * tracks.length)
-    // const track = tracks[index].track
-
-    // // setting the hook values
-    // setTrackName(track.name)
-    // setTrackImage(track.album.images[0].url)
-    // setTrackUri(track.uri)
-    // setTrackPreview(track?.preview_url)
-
   }
 
   function submitAnswer(event){
-    console.log(event, 'event')
     const answer = event.target.value
 
     if(answer.length > 0 && answer.trim().toLowerCase() == trackName.toLowerCase()){
