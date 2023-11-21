@@ -24,12 +24,9 @@ function App() {
   const [appStarted, setAppStarted] = useState(false)
   const [playback, setPlayback] = useState()
   const [tracksPlayed, setTracksPlayed] = useState([])
-  const [allTracks,setAllTracks] = useState(['index'])
+  const [allTracks,setAllTracks] = useState(['index1','index2'])
   const [answer, setAnswer] = useState()
-  const [tracks, setTracks] = useState()
-  const [track, setTrack] = useState()
-  const [index, setIndex] = useState()
-  
+  const [stateTracks, setStateTracks] = useState([])
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -72,7 +69,6 @@ function App() {
 
   useEffect(()=>{
     if(spotifyToken) showPlaylist()
-    console.log(' spotify token changed')
   },[spotifyToken])
 
 
@@ -91,160 +87,158 @@ function App() {
     //   });
 
     // to działa na taco
-    // spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ')
-    //   .then(function(data) {
-    //     console.log('User playlists', data);
-    //     setPlaylists(data.items)
-    //     console.log(playlists)
-    //   }, function(err) {
-    //     console.error(err);
-    //   });
+    spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ')
+      .then(function(data) {
+        console.log('User playlists', data);
+        setPlaylists(data.items)
+        console.log(playlists)
+      }, function(err) {
+        console.error(err);
+      });
 
 
     
-    // to działa na mnie
-    spotify.getUserPlaylists('karol.szejk')
-    .then(function(data){
-      console.log(data)
-      setPlaylists(data.items)
-    },function(error){
-      console.log(error)
-    })
-    // karol.szejk   karol
-    // 31vbfs3bupbisid7zcbomx633bna ja
-    // 31j6ri3azbworwq427dqcslt64x4 zosia
+    // // to działa na mnie
+    // spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna')
+    // .then(function(data){
+    //   console.log(data)
+    //   setPlaylists(data.items)
+    // },function(error){
+    //   console.log(error)
+    // })
+
   }
 
-  async function playTracks(){
-    
-    setPlayTrack(true)
-
-    setAppStarted(true)
-  
-    let playbackPlayer = setTimeout(()=>{
-        setPlayTrack(false)
-      },20_000)
-      setPlayback(playbackPlayer)
-  }
 
   async function showTracks(event){
     let setTracks = [...(new Set(allTracks))]
-    // console.log(setTracks, ' set tracks')
 
-    if ((setTracks.length == 1 && setTracks[0] == undefined) || setTracks.length == 0){
+    if ((setTracks.length == 2 && (setTracks[0] == undefined || setTracks[1] == undefined)) || setTracks.length == 0){
       console.log("thats the end")
     }else{
-      // // to działa na taco
-      // var tracks = await spotify.getAlbumTracks(selectedPlaylist,{limit: 50})
-      // .then(function(data){
-      //   return data.items
-      // }, function(error){
-      //   console.log(error)
-      // })
-      
-      // // picking a random track from this list
-      // const index = Math.floor(Math.random() * (tracks.length - 0 + 1) + 0)
-      // const track = tracks[index]
-      // setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
-
-      
-      
-      
-      // setAllTracks(tracks.map((track)=>{
-      //   if(!tracksPlayed.includes(track.uri)){
-      //     return track.uri
-          
-      //   }
-      // }))
-
-      // // setting the hook values
-      // if(!tracksPlayed.includes(track.uri)){
-      //   setTrackName(track.name)
-      //   setTrackUri(track.uri)
-
-      //   setPlayTrack(true)
-
-      //   setAppStarted(true)
-    
-      //   let playbackPlayer = setTimeout(()=>{
-      //     setPlayTrack(false)
-      //   },20_000)
-      //   setPlayback(playbackPlayer)
-        
-      // } else{
-      //     showTracks()
-      // }
-
-
-      if (event.target.textContent == "START"){
-
-        setTracks(await spotify.getPlaylistTracks(selectedPlaylist, { limit: 50 })
-        .then(function (data) {
+      if(event?.target.textContent == 'START'){
+        var tracks = await spotify.getAlbumTracks(selectedPlaylist,{limit: 50})
+        .then(function(data){
           return data.items
-        }, function (error) {
+        }, function(error){
           console.log(error)
+        })
+        
+        setStateTracks(tracks.map(track=>{
+          return track
         }))
+        
 
-        setIndex(Math.floor(Math.random() * (tracks.length)))
-        console.log(index, 'index')
-        setTrack(tracks[index].track)
-        // console.log(track.uri, '.uri')
-        setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
-  
-        // console.log(tracksPlayed, 'tracks played')
-          
-          
-        setAllTracks(tracks.map((track)=>{
-          // console.log(track.track, 'track.track inside of map')
-            if(!tracksPlayed.includes(track.track.uri)){
-              return track.track.uri
-              
-            }
-          }))
-          // console.log(allTracks, 'allTracks')
-  
-          // setting the hook values
+      // picking a random track from this list
+      const index = Math.floor(Math.random() * (tracks.length))
+      const track = tracks[index]
+      setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
 
+      
+      
+      
+      setAllTracks(tracks.map((track)=>{
+        if(!tracksPlayed.includes(track.uri)){
+          return track.uri
+          
+        }
+      }))
+
+      // setting the hook values
+      if(!tracksPlayed.includes(track.uri)){
         setTrackName(track.name)
         setTrackUri(track.uri)
-          
 
-        playTrack()
-      }else{
+        setPlayTrack(true)
+
+        setAppStarted(true)
+    
+        let playbackPlayer = setTimeout(()=>{
+          setPlayTrack(false)
+        },20_000)
+        setPlayback(playbackPlayer)
         
-          // to działa normalnie, ale potrzebuje update
+      }}else {
+        const index = Math.floor(Math.random() * (stateTracks.length))
+        const track = stateTracks[index]
+        setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
+  
+        
+        
+        
+        setAllTracks(stateTracks.map((track)=>{
+          if(!tracksPlayed.includes(track.uri)){
+            return track.uri
+            
+          }
+        }))
+  
+        // setting the hook values
+        if(!tracksPlayed.includes(track.uri)){
+          setTrackName(track.name)
+          setTrackUri(track.uri)
+          console.log(track.name)
+          setPlayTrack(true)
+  
+          setAppStarted(true)
+      
+          let playbackPlayer = setTimeout(()=>{
+            setPlayTrack(false)
+          },20_000)
+          setPlayback(playbackPlayer)
+          
+        } else{
+            showTracks(event)
+        }
+      }
+      // // to działa na taco
 
 
-        // picking a random track from this list
-      setIndex(Math.floor(Math.random() * (tracks.length)))
-      console.log(index, 'index')
-      setTrack(tracks[index].track)
+
+
+      // const tracks = await spotify.getPlaylistTracks(selectedPlaylist, { limit: 50 })
+      //   .then(function (data) {
+      //     return data.items
+      //   }, function (error) {
+      //     console.log(error)
+      //   })
+
+      //   // picking a random track from this list
+      // const index = Math.floor(Math.random() * (tracks.length ))
+      // const track = tracks[index].track
       // console.log(track.uri, '.uri')
-      setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
+      // setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
 
       // console.log(tracksPlayed, 'tracks played')
         
         
-      setAllTracks(tracks.map((track)=>{
-        // console.log(track.track, 'track.track inside of map')
-          if(!tracksPlayed.includes(track.track.uri)){
-            return track.track.uri
+      // setAllTracks(tracks.map((track)=>{
+      //   console.log(track.track, 'track.track inside of map')
+      //     if(!tracksPlayed.includes(track.track.uri)){
+      //       return track.track.uri
             
-          }
-        }))
-        // console.log(allTracks, 'allTracks')
+      //     }
+      //   }))
+      //   console.log(allTracks, 'allTracks')
 
-        // setting the hook values
-      if(!tracksPlayed.includes(track.uri)){
-        setTrackName(track.name)
-        setTrackUri(track.uri)
-        
-        } else{
-            showTracks()
-        }
+      //   // setting the hook values
+      // if(!tracksPlayed.includes(track.uri)){
+      //    setTrackName(track.name)
+      //     setTrackUri(track.uri)
+
+      //     setPlayTrack(true)
+
+      //     setAppStarted(true)
+      
+      //     let playbackPlayer = setTimeout(()=>{
+      //       setPlayTrack(false)
+      //     },20_000)
+      //     setPlayback(playbackPlayer)
+          
+      //   } else{
+      //       showTracks()
+      //   }
          
-      }
-
     }
   }
 
@@ -260,13 +254,9 @@ function App() {
           return track !== trackUri;
         }))
       clearTimeout(playback)
-      
-
-      showTracks()
       setTimeout(() => {
         setAnswerFeedback('')
-        // myBtn.current.click()
-        playTracks()
+        showTracks(event)
       }, 3_000);
     }
     else{
