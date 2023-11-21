@@ -26,6 +26,10 @@ function App() {
   const [tracksPlayed, setTracksPlayed] = useState([])
   const [allTracks,setAllTracks] = useState(['index'])
   const [answer, setAnswer] = useState()
+  const [tracks, setTracks] = useState()
+  const [track, setTrack] = useState()
+  const [index, setIndex] = useState()
+  
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -68,6 +72,7 @@ function App() {
 
   useEffect(()=>{
     if(spotifyToken) showPlaylist()
+    console.log(' spotify token changed')
   },[spotifyToken])
 
 
@@ -98,20 +103,33 @@ function App() {
 
     
     // to działa na mnie
-    spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna')
+    spotify.getUserPlaylists('karol.szejk')
     .then(function(data){
       console.log(data)
       setPlaylists(data.items)
     },function(error){
       console.log(error)
     })
-
+    // karol.szejk   karol
+    // 31vbfs3bupbisid7zcbomx633bna ja
+    // 31j6ri3azbworwq427dqcslt64x4 zosia
   }
 
+  async function playTracks(){
+    
+    setPlayTrack(true)
 
-  async function showTracks(){
+    setAppStarted(true)
+  
+    let playbackPlayer = setTimeout(()=>{
+        setPlayTrack(false)
+      },20_000)
+      setPlayback(playbackPlayer)
+  }
+
+  async function showTracks(event){
     let setTracks = [...(new Set(allTracks))]
-    console.log(setTracks, ' set tracks')
+    // console.log(setTracks, ' set tracks')
 
     if ((setTracks.length == 1 && setTracks[0] == undefined) || setTracks.length == 0){
       console.log("thats the end")
@@ -158,51 +176,75 @@ function App() {
       // }
 
 
+      if (event.target.textContent == "START"){
 
-          // to działa normalnie, ale potrzebuje update
-      const tracks = await spotify.getPlaylistTracks(selectedPlaylist, { limit: 50 })
+        setTracks(await spotify.getPlaylistTracks(selectedPlaylist, { limit: 50 })
         .then(function (data) {
           return data.items
         }, function (error) {
           console.log(error)
-        })
+        }))
+
+        setIndex(Math.floor(Math.random() * (tracks.length)))
+        console.log(index, 'index')
+        setTrack(tracks[index].track)
+        // console.log(track.uri, '.uri')
+        setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
+  
+        // console.log(tracksPlayed, 'tracks played')
+          
+          
+        setAllTracks(tracks.map((track)=>{
+          // console.log(track.track, 'track.track inside of map')
+            if(!tracksPlayed.includes(track.track.uri)){
+              return track.track.uri
+              
+            }
+          }))
+          // console.log(allTracks, 'allTracks')
+  
+          // setting the hook values
+
+        setTrackName(track.name)
+        setTrackUri(track.uri)
+          
+
+        playTrack()
+      }else{
+        
+          // to działa normalnie, ale potrzebuje update
+
 
         // picking a random track from this list
-      const index = Math.floor(Math.random() * (tracks.length - 0 + 1) + 0)
-      const track = tracks[index].track
-      console.log(track.uri, '.uri')
+      setIndex(Math.floor(Math.random() * (tracks.length)))
+      console.log(index, 'index')
+      setTrack(tracks[index].track)
+      // console.log(track.uri, '.uri')
       setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
 
-      console.log(tracksPlayed, 'tracks played')
+      // console.log(tracksPlayed, 'tracks played')
         
         
       setAllTracks(tracks.map((track)=>{
-        console.log(track.track, 'track.track inside of map')
+        // console.log(track.track, 'track.track inside of map')
           if(!tracksPlayed.includes(track.track.uri)){
             return track.track.uri
             
           }
         }))
-        console.log(allTracks, 'allTracks')
+        // console.log(allTracks, 'allTracks')
 
         // setting the hook values
       if(!tracksPlayed.includes(track.uri)){
-         setTrackName(track.name)
-          setTrackUri(track.uri)
-
-          setPlayTrack(true)
-
-          setAppStarted(true)
-      
-          let playbackPlayer = setTimeout(()=>{
-            setPlayTrack(false)
-          },20_000)
-          setPlayback(playbackPlayer)
-          
+        setTrackName(track.name)
+        setTrackUri(track.uri)
+        
         } else{
             showTracks()
         }
          
+      }
+
     }
   }
 
@@ -218,9 +260,13 @@ function App() {
           return track !== trackUri;
         }))
       clearTimeout(playback)
+      
+
+      showTracks()
       setTimeout(() => {
         setAnswerFeedback('')
-        myBtn.current.click()
+        // myBtn.current.click()
+        playTracks()
       }, 3_000);
     }
     else{
@@ -268,7 +314,7 @@ function App() {
                 submitAnswer(event)
               }
             }} />
-            <button ref={myBtn} onClick={showTracks} style={(!selectedPlaylist ? {display: 'none'} :{})}>START</button>
+            <button ref={myBtn} onClick={event => showTracks(event)} style={(!selectedPlaylist ? {display: 'none'} :{})}>START</button>
           </div>
           <div>
             {searchResult.map(track=>(
