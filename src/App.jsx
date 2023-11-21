@@ -69,6 +69,7 @@ function App() {
 
   useEffect(()=>{
     if(spotifyToken) showPlaylist()
+    console.log('show playlist')
   },[spotifyToken])
 
 

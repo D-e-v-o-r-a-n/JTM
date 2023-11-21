@@ -6,7 +6,8 @@ $spotifyDark: #191414;
 .trackSearchResult{
     display: flex;
     align-items: center;
-    margin: 1rem;
+    margin: 2rem;
+    border-radius: 15px;
     background-color: $spotifyGreen1;
 
     img{
@@ -17,6 +18,10 @@ $spotifyDark: #191414;
 
     &:hover{
         cursor: pointer;
+        box-shadow: 0px 0px 15px 2px $spotifyGreen2;
+        transition: 600ms;
+        color: white;
+        background: $spotifyDark;
     }
 }
 
