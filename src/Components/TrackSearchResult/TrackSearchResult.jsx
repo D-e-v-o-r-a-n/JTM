@@ -4,6 +4,7 @@ import './TrackSearchResult.scss'
 export default function TrackSearchResult({track, trackFunction}){
 
     return(
+        <a href="#">
         <div className="trackSearchResult" onClick={()=>{trackFunction(track.title)}}>
             <img src={track.albumUrl} />
             <div className="text">
@@ -11,5 +12,6 @@ export default function TrackSearchResult({track, trackFunction}){
                 <div>{track.artist}</div>
             </div>
         </div>
+        </a>
     )
 }

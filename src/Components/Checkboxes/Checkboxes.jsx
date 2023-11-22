@@ -9,13 +9,13 @@ export default function Checkboxes({selectedPlaylist, spotifyToken, checkboxFunc
         <div  style={selectedPlaylist ? {display: 'none'} :{}}>
         <div className='checkboxes' style={!spotifyToken ? {display: 'none'} : {}}>
           <div>
-            <input type="checkbox" name="check" attributes="User" onClick={event => checkboxFunction(event)}></input><span>Me</span>
+            <input type="checkbox" name="check" attributes="Me" onClick={event => checkboxFunction(event)}></input><span>Me</span>
           </div>
           <div>
-            <input type="checkbox" name="check" attributes="Taco" onClick={event => checkboxFunction(event)}></input><span>Artist</span>
+            <input type="checkbox" name="check" attributes="Artist" onClick={event => checkboxFunction(event)}></input><span>Artist</span>
           </div>
           <div>
-            <input type="checkbox" name="check" attributes="Special"  onClick={event => checkboxFunction(event)}></input><span>User</span>
+            <input type="checkbox" name="check" attributes="User"  onClick={event => checkboxFunction(event)}></input><span>User</span>
           </div>
         </div>
       </div>
