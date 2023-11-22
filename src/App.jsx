@@ -27,6 +27,7 @@ function App() {
   const [allTracks,setAllTracks] = useState(['index1','index2'])
   const [answer, setAnswer] = useState()
   const [stateTracks, setStateTracks] = useState([])
+  const [checkboxType, setCheckboxType] = useState('check')
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -68,27 +69,26 @@ function App() {
 
 
   useEffect(()=>{
-    if(spotifyToken) showPlaylist()
-    console.log('show playlist')
-  },[spotifyToken])
+    if(spotifyToken) showPlaylist(checkboxType)
+  },[spotifyToken,checkboxType])
+  
+  useEffect(()=>{
+    var checkboxes = document.getElementsByName('check')
+    checkboxes.forEach(item=>{
+      if (item.checked){setCheckboxType(item.attributes[2]['value'])}
+    })
 
+    console.log(checkboxType, 'useeffect')
+  },[checkboxType])
 
   useEffect(()=>{
     if(appStarted) myBtn.current.style='display: none'
   }, [appStarted])
 
-  async function showPlaylist() {
-    //  spotify.getUserPlaylists()
-    //   .then(function(data) {
-    //     console.log('User playlists', data);
-    //     setPlaylists(data.items)
-    //     console.log(playlists)
-    //   }, function(err) {
-    //     console.error(err);
-    //   });
-
-    // to działa na taco
-    spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ')
+  async function showPlaylist(type) {
+    console.log(checkboxType, 'checkboxtypeshowplaylist')
+    if(type == 'User'){
+     spotify.getUserPlaylists({limit: 50})
       .then(function(data) {
         console.log('User playlists', data);
         setPlaylists(data.items)
@@ -97,17 +97,26 @@ function App() {
         console.error(err);
       });
 
+    } else if(type == 'Taco'){
+       // to działa na taco
+      spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ',{limit: 50, include_groups: 'album'})
+        .then(function (data) {
+          console.log('User playlists', data);
+          setPlaylists(data.items)
+          console.log(playlists)
+        }, function (err) {
+          console.error(err);
+        });
 
-    
-    // // to działa na mnie
-    // spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna')
-    // .then(function(data){
-    //   console.log(data)
-    //   setPlaylists(data.items)
-    // },function(error){
-    //   console.log(error)
-    // })
-
+    } else if(type == 'Special'){
+      spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna',{limit: 50})
+        .then(function (data) {
+          console.log(data)
+          setPlaylists(data.items)
+        }, function (error) {
+          console.log(error)
+        })
+    } 
   }
 
 
@@ -243,6 +252,15 @@ function App() {
     }
   }
 
+  function onlyOne(event) {
+    console.log(checkboxType)
+    var checkboxes = document.getElementsByName("check");
+    checkboxes.forEach((item) => {
+        if (item !== event.target) item.checked = false
+    })
+    setCheckboxType(event.target.attributes[2]['value'])
+  }
+
   function submitAnswer(event){
     const answer = event.target.value
 
@@ -289,15 +307,27 @@ function App() {
       <span id="#"></span>
       <div className="App">
         <header className="App-header">
-
           <div style={{ display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }}>
             <h1>Choose one of your playlists and try to guess a song!</h1>
             <span>For each track you have 20 seconds of listening</span>
             <h1>{answerFeedback}</h1>
           </div>
+          <div  style={selectedPlaylist ? {display: 'none'} :{}}>
+            <div className='checkboxes' style={!spotifyToken ? {display: 'none'} : {}}>
+              <div>
+                <input type="checkbox" name="check" attributes="User" onClick={event => onlyOne(event)}></input><span>User</span>
+              </div>
+              <div>
+                <input type="checkbox" name="check" attributes="Taco" onClick={event => onlyOne(event)}></input><span>Taco</span>
+              </div>
+              <div>
+                <input type="checkbox" name="check" attributes="Special"  onClick={event => onlyOne(event)}></input><span>Special</span>
+              </div>
+            </div>
+          </div>
 
 
-          <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}}>Sign in with Spotify</a>
+          <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}} >Sign in with Spotify</a>
 
           <div style={ (!spotifyToken ? {display: 'none'} : {display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem'}) }>
             <input type="text" name="" id="guessInput" ref={myInput} style={(!selectedPlaylist ? {display: 'none'} :{}) && (!appStarted ? {display: 'none'} : {} )}  onChange={event => { setSearchInput(event.target.value) }} onKeyDown={event => {
