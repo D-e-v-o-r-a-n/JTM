@@ -6,6 +6,9 @@ import SpotifyWebApi from 'spotify-web-api-js'
 import Player from './Components/Player/Player';
 import TrackSearchResult from './Components/TrackSearchResult/TrackSearchResult';
 import Zoisa from './zoisa';
+import Checkboxes from './Components/Checkboxes/Checkboxes';
+import Input from './Components/Input/Input';
+import Playlists_n_Albums from './Components/Playlist_n_Albums/Playlists_n_Albums';
 
 const spotify = new SpotifyWebApi()
 
@@ -28,6 +31,7 @@ function App() {
   const [answer, setAnswer] = useState()
   const [stateTracks, setStateTracks] = useState([])
   const [checkboxType, setCheckboxType] = useState('check')
+
   const myBtn = useRef(null)
   const myInput = useRef(null)
 
@@ -87,6 +91,7 @@ function App() {
 
   async function showPlaylist(type) {
     console.log(checkboxType, 'checkboxtypeshowplaylist')
+
     if(type == 'User'){
      spotify.getUserPlaylists({limit: 50})
       .then(function(data) {
@@ -96,6 +101,7 @@ function App() {
       }, function(err) {
         console.error(err);
       });
+
 
     } else if(type == 'Taco'){
        // to działa na taco
@@ -107,6 +113,7 @@ function App() {
         }, function (err) {
           console.error(err);
         });
+
 
     } else if(type == 'Special'){
       spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna',{limit: 50})
@@ -252,14 +259,7 @@ function App() {
     }
   }
 
-  function onlyOne(event) {
-    console.log(checkboxType)
-    var checkboxes = document.getElementsByName("check");
-    checkboxes.forEach((item) => {
-        if (item !== event.target) item.checked = false
-    })
-    setCheckboxType(event.target.attributes[2]['value'])
-  }
+
 
   function submitAnswer(event){
     const answer = event.target.value
@@ -292,6 +292,16 @@ function App() {
     setSelectedPlaylist(event.currentTarget.attributes[0]['value'])
   }
 
+  function onlyOne(event) {
+    console.log(checkboxType)
+    var checkboxes = document.getElementsByName("check");
+    checkboxes.forEach((item) => {
+        if (item !== event.target) item.checked = false
+    })
+    setCheckboxType(event.target.attributes[2]['value'])
+  }
+
+
   function tamagotchi(answer){
     setAnswer(answer)
     myInput.current.value = answer
@@ -305,62 +315,28 @@ function App() {
   return (
     <>
       <span id="#"></span>
-      <div className="App">
         <header className="App-header">
           <div style={{ display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }}>
             <h1>Choose one of your playlists and try to guess a song!</h1>
             <span>For each track you have 20 seconds of listening</span>
             <h1>{answerFeedback}</h1>
           </div>
-          <div  style={selectedPlaylist ? {display: 'none'} :{}}>
-            <div className='checkboxes' style={!spotifyToken ? {display: 'none'} : {}}>
-              <div>
-                <input type="checkbox" name="check" attributes="User" onClick={event => onlyOne(event)}></input><span>User</span>
-              </div>
-              <div>
-                <input type="checkbox" name="check" attributes="Taco" onClick={event => onlyOne(event)}></input><span>Taco</span>
-              </div>
-              <div>
-                <input type="checkbox" name="check" attributes="Special"  onClick={event => onlyOne(event)}></input><span>Special</span>
-              </div>
-            </div>
-          </div>
 
+          <Checkboxes spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} checkboxFunction={onlyOne}/>
 
           <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}} >Sign in with Spotify</a>
 
-          <div style={ (!spotifyToken ? {display: 'none'} : {display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem'}) }>
-            <input type="text" name="" id="guessInput" ref={myInput} style={(!selectedPlaylist ? {display: 'none'} :{}) && (!appStarted ? {display: 'none'} : {} )}  onChange={event => { setSearchInput(event.target.value) }} onKeyDown={event => {
-              if (event.key === 'Enter') {
-                submitAnswer(event)
-              }
-            }} />
-            <button ref={myBtn} onClick={event => showTracks(event)} style={(!selectedPlaylist ? {display: 'none'} :{})}>START</button>
-          </div>
+          <Input spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} appStarted={appStarted} showTracks={showTracks} submitAnswer={submitAnswer} setSearchInput={setSearchInput}
+            myBtn={myBtn} myInput={myInput}/>
+
           <div>
             {searchResult.map(track=>(
               <TrackSearchResult track={track} key={track.uri} trackFunction={tamagotchi}/>
             ))}
-
           </div>
         </header>
-      </div>
-      <div style={ !spotifyToken ? {display: 'none'} : {} }>
-        <div id='playlistWhole' style={selectedPlaylist ? {display: 'none'} : {}}>
-          <span>Your playlists</span>
-          <div id='playlistContainer'>
-            {playlists.map((playlist => {
-              return (
-                <div id='playlist'>
-                  <span>{playlist.name}</span>
-                  <img src={playlist.images[0].url} />
-                  <button property={playlist.id} onClick={event => select(event)} ><a href="#">Select</a></button>
-                </div>
-              )
-            }))}
-          </div>
-        </div>
-      </div>
+
+        <Playlists_n_Albums spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} select={select} playlists={playlists}/>
 
         <div style={{display: 'none'}}>
           <Player accessToken={spotifyToken} trackUri={trackUri} playTrack={playTrack}/>
