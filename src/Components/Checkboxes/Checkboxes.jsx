@@ -6,10 +6,10 @@ export default function Checkboxes({selectedPlaylist, spotifyToken, checkboxFunc
 
 
     return(
-        <div  style={selectedPlaylist ? {display: 'none'} :{}}>
+        <div  style={selectedPlaylist ? {display: 'none'} :{}} className="wholeCheckboxes">
         <div className='checkboxes' style={!spotifyToken ? {display: 'none'} : {}}>
           <div>
-            <input type="checkbox" name="check" attributes="Me" onClick={event => checkboxFunction(event)}></input><span>Me</span>
+            <input type="checkbox" name="check" attributes="Me"  onClick={event => checkboxFunction(event)}></input><span>Me</span>
           </div>
           <div>
             <input type="checkbox" name="check" attributes="Artist" onClick={event => checkboxFunction(event)}></input><span>Artist</span>

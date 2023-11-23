@@ -1,14 +1,14 @@
 import React from "react"
 import './Input.scss'
 
-export default function Input({spotifyToken, selectedPlaylist, appStarted, submitAnswer, skipFunction, showTracks, setSearchInput, myBtn, myInput, }){
+export default function Input({spotifyToken, selectedPlaylist, appStarted, submitAnswer, skipFunction, showTracks, setSearchInput, myBtn, myInput,toggleFocus}){
 
 
 
     return(
         <div style={(!spotifyToken ? { display: 'none' } : { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' })}>
             <div style={(!selectedPlaylist ? { display: 'none' } : {}) && (!appStarted ? { display: 'none' } : {})}>
-                <input type="text" name="" id="guessInput" ref={myInput} onChange={event => { setSearchInput(event.target.value) }} onKeyDown={event => {
+                <input type="text" name="" id="guessInput"  ref={myInput} onFocus={toggleFocus} onBlur={toggleFocus} onChange={event => { setSearchInput(event.target.value) }} onKeyDown={event => {
                     if (event.key === 'Enter') {
                         submitAnswer(event)
                         

@@ -8,6 +8,7 @@ import Zoisa from './zoisa';
 import Checkboxes from './Components/Checkboxes/Checkboxes';
 import Input from './Components/Input/Input';
 import Playlists_n_Albums from './Components/Playlist_n_Albums/Playlists_n_Albums';
+import Summary from './Components/Summary/Summary';
 
 const spotify = new SpotifyWebApi()
 
@@ -22,7 +23,7 @@ function App() {
   const [searchInput, setSearchInput] = useState();
   const [searchResult, setSearchResult] = useState([]);
   const [playTrack, setPlayTrack] = useState(false);
-  const [answerFeedback, setAnswerFeedback] = useState()
+  const [answerFeedback, setAnswerFeedback] = useState('Guess!')
   const [appStarted, setAppStarted] = useState(false)
   const [playback, setPlayback] = useState()
   const [tracksPlayed, setTracksPlayed] = useState([])
@@ -33,11 +34,18 @@ function App() {
   const [skipped,setSkipped] = useState([])
   const [guessed,setGuessed] = useState([])
   const [answered, setAnswered] = useState(false)
+  const [trackNumber, setTrackNumber] = useState(1)
+
 
   const myBtn = useRef(null)
   const myInput = useRef(null)
   const lastAnswer = useRef(null)
+  const myH1 = useRef(null)
+  const inputFocused = useRef(false)
+  const counter = useRef(null)
 
+  const score = useRef()
+  const guessingFinished = useRef(false)
 
   useEffect(() => {
     const _spotifyToken = getTokenFromUrl().access_token;
@@ -145,14 +153,24 @@ function App() {
     let setTracks = [...(new Set(allTracks))]
 
     if ((setTracks.length == 2 && (setTracks[0] == undefined || setTracks[1] == undefined)) || setTracks.length == 1){
-      if(answer.toLowerCase() == lastAnswer.current.toLowerCase().trim()){
-        console.log([...guessed, trackName], 'guessed')
-        console.log(skipped, 'skipped')
+      guessingFinished.current = true
+      setPlayTrack(false)
+
+      // if(answer.toLowerCase() == lastAnswer.current.toLowerCase().trim()){
+
+      //   // setSelectedPlaylist(false)
+      //   // setAppStarted(false)
+      //   console.log(allTracks)
+      //   console.log([...guessed, trackName], 'guessed')
+      //   console.log(skipped, 'skipped')
+      //   // setGuessed( guessed => [...guessed, trackName])
         
-      }else{
-        console.log(guessed, 'guessed')
-        console.log([...skipped, trackName], 'skipped')
-      }
+      // }else{
+      //   console.log(guessed, 'guessed')
+      //   console.log([...skipped, trackName], 'skipped')
+      //   // setSkipped( skipped => [...skipped, trackName])
+
+      // }
       console.log("thats the end")
 
       
@@ -337,18 +355,27 @@ function App() {
 
 
 
+  function toggleFocus(){
+    inputFocused.current = !inputFocused.current
+    // console.log(inputFocused.current)
+}
+
   function skip(){
     // removing skipped track from ' to be played' playlist
     console.log(trackName)
     setSkipped(skipped => [...skipped, trackName])
     setPlayTrack(false)
+    myH1.current.style.color = 'red'
     setAnswerFeedback('Skipped')
     setAllTracks(current =>
       current.filter(track => {
         return track !== trackUri;
       }))
     setTimeout(()=>{
-      setAnswerFeedback(' ')
+      myH1.current.style.color = 'white'
+      setAnswerFeedback('Guess!')
+      setTrackNumber(trackNumber+1)
+      myInput.current.value = null
       clearTimeout(playback)
       showTracks()
     },1000)
@@ -363,7 +390,9 @@ function App() {
 
       setAnswered(true)
       setPlayTrack(false)
-      setAnswerFeedback('Brawo, za 3 sekundy następna piosenka')
+
+      myH1.current.style.color = 'lime'
+      setAnswerFeedback('Correct')
       // removing guessed track from ' to be played' playlist
       setAllTracks(current =>
         current.filter(track => {
@@ -377,15 +406,21 @@ function App() {
       },10)
 
       setTimeout(() => {
-        setAnswerFeedback(' ')
+        myH1.current.style.color = 'white'
+        setAnswerFeedback('Guess!')
+        setTrackNumber(trackNumber+1)
+
         showTracks(event)
       }, 3_000);
     }
     else{
-      setAnswerFeedback(" PRÓBUJ DALEJ!")
+      myH1.current.style.color = 'yellow'
+      setAnswerFeedback("Wrong!")
+      myInput.current.value = null
       console.log({trackName})
       setTimeout(()=>{
-        setAnswerFeedback(' ')
+        myH1.current.style.color = 'white'
+        setAnswerFeedback("Guess!")
       }, 2000)
     }
   }
@@ -418,19 +453,29 @@ function App() {
   return (
     <>
       <span id="#"></span>
-        <header className="App-header">
-          <div style={selectedPlaylist ? {display: 'none'} : { display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }}>
-            <h1>Choose one of your playlists and try to guess a song!</h1>
-            <span>For each track you have 20 seconds of listening</span>
-          </div>
-          <h1>{answerFeedback}</h1>
+        <div style={selectedPlaylist ? { display: 'none' } : { display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }}>
+          <h1>Choose one of your playlists and try to guess a song!</h1>
+          <span>For each track you have 20 seconds of listening</span>
+        </div>
+        <Summary guessingFinished={guessingFinished} guessed={guessed} skipped={skipped} setGuessed={setGuessed} setSkipped={setSkipped} stateTracks={stateTracks} setAppStarted={setAppStarted} setSelectedPlaylist={setSelectedPlaylist}
+        spotifyToken={spotifyToken} setPlaylists={setPlaylists} setSearchResult={setSearchResult} setTracksPlayed={setTracksPlayed} setStateTracks={setStateTracks} setAllTracks={setAllTracks}
+        setCheckboxType={setCheckboxType} setAnswered={setAnswered} score={score} setTrackNumber={setTrackNumber} setPlayTrack={setPlayTrack}
+        />
+        
+        <Checkboxes spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} checkboxFunction={onlyOne}/>
 
-          <Checkboxes spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} checkboxFunction={onlyOne}/>
+        <header className="App-header" style={guessingFinished.current ? {display: 'none'}:{}}>
+          
+          <div id='feedback' style={appStarted ? {} : {visibility:'hidden'}}>
+            <h1 ref={myH1} >{answerFeedback}</h1>
+            <h1 ref={counter}>{`Track ${trackNumber} out of ${stateTracks.length}`}</h1>
+          </div>
+
 
           <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}} >Sign in with Spotify</a>
 
           <Input spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} appStarted={appStarted} showTracks={showTracks} submitAnswer={submitAnswer} setSearchInput={setSearchInput}
-            myBtn={myBtn} myInput={myInput} skipFunction={skip} />
+            myBtn={myBtn} myInput={myInput} skipFunction={skip}  toggleFocus={toggleFocus}/>
 
           <div>
             {searchResult.map(track=>(
@@ -439,7 +484,7 @@ function App() {
           </div>
         </header>
 
-        <Playlists_n_Albums spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} select={select} playlists={playlists}/>
+        <Playlists_n_Albums spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} select={select} playlists={playlists} checkboxType={checkboxType}/>
 
         <div style={{display: 'none'}}>
           <Player accessToken={spotifyToken} trackUri={trackUri} playTrack={playTrack}/>

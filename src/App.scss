@@ -34,7 +34,7 @@ button{
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 3rem;
+  margin: 0rem;
   flex-direction: column;
   font-family: 'Kanit', sans-serif;
   margin-bottom: 0;
@@ -66,4 +66,12 @@ a{
 
 h1{
   color: white;
+  margin: 0.1rem;
+}
+
+#feedback{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }

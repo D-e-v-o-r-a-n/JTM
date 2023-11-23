@@ -1,0 +1,44 @@
+#WholeSummary{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#Summary{
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    color: white;
+    gap: 35rem;
+    .sections{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    h1{
+        margin-bottom: 2rem;
+    }
+}
+#Guessed, #Skipped{
+    padding: 2rem;
+    border-radius: 15px;
+    display: grid;
+    grid-template-columns: 10rem 10rem 10rem ;
+    grid-template-rows: auto;
+    place-items: center;
+    row-gap: 1rem;
+    column-gap: 1rem;
+}
+
+
+#Guessed{
+    box-shadow: 0px 0px 25px 0px lime;
+    border: 2px solid lime;
+}
+
+#Skipped{
+    box-shadow: 0px 0px 25px 0px red;
+    border: 2px solid red;
+}

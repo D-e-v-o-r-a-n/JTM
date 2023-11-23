@@ -10,6 +10,9 @@ $spotifyDark: #191414;
     padding: 1rem;
     border-radius: 15px;
     background-color: $spotifyGreen1;
+    transition: 1000ms;
+    width: 38rem;
+
 
     img{
         margin: 1rem;
@@ -24,6 +27,7 @@ $spotifyDark: #191414;
         color: white;
         background: $spotifyDark;
     }
+
 }
 
 .text{
