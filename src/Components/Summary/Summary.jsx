@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import './Summary.scss'
 
 export default function Summary({guessingFinished, guessed, skipped, setGuessed, setSkipped, stateTracks,setSelectedPlaylist,setAppStarted,

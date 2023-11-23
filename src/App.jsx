@@ -112,6 +112,7 @@ function App() {
       case 'Me':
         spotify.getUserPlaylists({limit: 50})
          .then(function(data) {
+           console.log('User playlists', data);
            setPlaylists(data.items)
          }, function(err) {
            console.error(err);
