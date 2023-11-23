@@ -101,7 +101,6 @@ function App() {
       if (item.checked){setCheckboxType(item.attributes[2]['value'])}
     })
 
-    console.log(checkboxType, 'useeffect')
   },[checkboxType])
 
   useEffect(()=>{
@@ -109,7 +108,6 @@ function App() {
   }, [appStarted])
 
   async function showPlaylist() {
-    console.log(checkboxType, 'checkboxtypeshowplaylist')
     switch(checkboxType){
       case 'Me':
         spotify.getUserPlaylists({limit: 50})
@@ -126,9 +124,7 @@ function App() {
           // to działa na taco
          spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ',{limit: 50, include_groups: 'album'})
            .then(function (data) {
-             console.log('User playlists', data);
              setPlaylists(data.items)
-             console.log(playlists)
            }, function (err) {
              console.error(err);
            });
@@ -154,26 +150,7 @@ function App() {
 
     if ((setTracks.length == 2 && (setTracks[0] == undefined || setTracks[1] == undefined)) || setTracks.length == 1){
       guessingFinished.current = true
-      setPlayTrack(false)
-
-      // if(answer.toLowerCase() == lastAnswer.current.toLowerCase().trim()){
-
-      //   // setSelectedPlaylist(false)
-      //   // setAppStarted(false)
-      //   console.log(allTracks)
-      //   console.log([...guessed, trackName], 'guessed')
-      //   console.log(skipped, 'skipped')
-      //   // setGuessed( guessed => [...guessed, trackName])
-        
-      // }else{
-      //   console.log(guessed, 'guessed')
-      //   console.log([...skipped, trackName], 'skipped')
-      //   // setSkipped( skipped => [...skipped, trackName])
-
-      // }
-      console.log("thats the end")
-
-      
+      setPlayTrack(false)     
     }else{
       // if there is more than one unplayed song, and here there isn't any played yet, because its the beginning we request album or playlist
       if(event?.target.textContent == 'START'){
@@ -285,7 +262,6 @@ function App() {
           if(!tracksPlayed.includes(trackArtist.uri)){
             setTrackName(trackArtist.name)
             setTrackUri(trackArtist.uri)
-            console.log(trackArtist.name)
             setPlayTrack(true)
     
             setAppStarted(true)
@@ -308,7 +284,6 @@ function App() {
             const index = Math.floor(Math.random() * (stateTracks.length))
             const track = stateTracks[index].track
 
-            console.log(track.uri, 'track.uri before tracks played')
 
             setTracksPlayed(tracksPlayed => [...tracksPlayed,track.uri] )
 
@@ -362,7 +337,6 @@ function App() {
 
   function skip(){
     // removing skipped track from ' to be played' playlist
-    console.log(trackName)
     setSkipped(skipped => [...skipped, trackName])
     setPlayTrack(false)
     myH1.current.style.color = 'red'
@@ -417,7 +391,6 @@ function App() {
       myH1.current.style.color = 'yellow'
       setAnswerFeedback("Wrong!")
       myInput.current.value = null
-      console.log({trackName})
       setTimeout(()=>{
         myH1.current.style.color = 'white'
         setAnswerFeedback("Guess!")
@@ -432,7 +405,6 @@ function App() {
   }
 
   function onlyOne(event) {
-    console.log(checkboxType)
     var checkboxes = document.getElementsByName("check");
     checkboxes.forEach((item) => {
         if (item !== event.target) item.checked = false
