@@ -112,9 +112,7 @@ function App() {
       case 'Me':
         spotify.getUserPlaylists({limit: 50})
          .then(function(data) {
-           console.log('User playlists', data);
            setPlaylists(data.items)
-           console.log(playlists)
          }, function(err) {
            console.error(err);
          });
@@ -133,7 +131,6 @@ function App() {
       case 'User':
          spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna',{limit: 50})
            .then(function (data) {
-             console.log(data)
              setPlaylists(data.items)
            }, function (error) {
              console.log(error)
@@ -148,12 +145,12 @@ function App() {
   async function showTracks(event){
     let setTracks = [...(new Set(allTracks))]
 
-    if ((setTracks.length == 2 && (setTracks[0] == undefined || setTracks[1] == undefined)) || setTracks.length == 1){
+    if ((setTracks.length === 2 && (setTracks[0] === undefined || setTracks[1] === undefined)) || setTracks.length === 1){
       guessingFinished.current = true
       setPlayTrack(false)     
     }else{
       // if there is more than one unplayed song, and here there isn't any played yet, because its the beginning we request album or playlist
-      if(event?.target.textContent == 'START'){
+      if(event?.target.textContent === 'START'){
         if(checkboxType == 'Artist'){
           var tracks = await spotify.getAlbumTracks(selectedPlaylist,{limit: 50})
           .then(function(data){
@@ -405,11 +402,7 @@ function App() {
   }
 
   function onlyOne(event) {
-    var checkboxes = document.getElementsByName("check");
-    checkboxes.forEach((item) => {
-        if (item !== event.target) item.checked = false
-    })
-    setCheckboxType(event.target.attributes[2]['value'])
+    setCheckboxType(event.target.text)
   }
 
 
