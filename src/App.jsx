@@ -30,9 +30,13 @@ function App() {
   const [answer, setAnswer] = useState()
   const [stateTracks, setStateTracks] = useState([])
   const [checkboxType, setCheckboxType] = useState('check')
+  const [skipped,setSkipped] = useState([])
+  const [guessed,setGuessed] = useState([])
+  const [answered, setAnswered] = useState(false)
 
   const myBtn = useRef(null)
   const myInput = useRef(null)
+  const lastAnswer = useRef(null)
 
 
   useEffect(() => {
@@ -69,6 +73,15 @@ function App() {
       }))
     }).catch(err=>console.log(err))
   }, [searchInput, spotifyToken])
+
+  useEffect(()=>{
+    if(trackName) setAnswer(trackName)
+  },[trackName])
+
+  useEffect(()=>{
+    let myAnswer = myInput.current.value
+    lastAnswer.current = myAnswer
+  },[answered])
 
   useEffect(()=>{
     if(spotifyToken) showPlaylist()
@@ -130,10 +143,19 @@ function App() {
 
   async function showTracks(event){
     let setTracks = [...(new Set(allTracks))]
-    console.log(setTracks, 'setTracks on the top')
 
-    if ((setTracks.length == 2 && (setTracks[0] == undefined || setTracks[1] == undefined)) || setTracks.length == 0){
+    if ((setTracks.length == 2 && (setTracks[0] == undefined || setTracks[1] == undefined)) || setTracks.length == 1){
+      if(answer.toLowerCase() == lastAnswer.current.toLowerCase().trim()){
+        console.log([...guessed, trackName], 'guessed')
+        console.log(skipped, 'skipped')
+        
+      }else{
+        console.log(guessed, 'guessed')
+        console.log([...skipped, trackName], 'skipped')
+      }
       console.log("thats the end")
+
+      
     }else{
       // if there is more than one unplayed song, and here there isn't any played yet, because its the beginning we request album or playlist
       if(event?.target.textContent == 'START'){
@@ -171,7 +193,10 @@ function App() {
           setPlayTrack(true)
   
           setAppStarted(true)
-      
+          setAnswer(trackName)
+          setAnswered(false)
+
+          
           let playbackPlayer = setTimeout(()=>{
             setPlayTrack(false)
           },20_000)
@@ -206,6 +231,8 @@ function App() {
             setPlayTrack(true)
 
             setAppStarted(true)
+            setAnswer(trackName)
+            setAnswered(false)
 
             let playbackPlayer = setTimeout(() => {
               setPlayTrack(false)
@@ -244,7 +271,10 @@ function App() {
             setPlayTrack(true)
     
             setAppStarted(true)
-        
+            setAnswer(trackName)
+            setAnswered(false)
+
+            
             let playbackPlayer = setTimeout(()=>{
               setPlayTrack(false)
             },20_000)
@@ -276,7 +306,6 @@ function App() {
               }
             }))
 
-            console.log(allTracks)
             // setting the hook values
             if(!tracksPlayed.includes(track.uri)){
               setTrackName(track.name)
@@ -285,7 +314,10 @@ function App() {
               setPlayTrack(true)
       
               setAppStarted(true)
-          
+              setAnswer(trackName)
+
+              setAnswered(false)
+              
               let playbackPlayer = setTimeout(()=>{
                 setPlayTrack(false)
               },20_000)
@@ -305,18 +337,45 @@ function App() {
 
 
 
+  function skip(){
+    // removing skipped track from ' to be played' playlist
+    console.log(trackName)
+    setSkipped(skipped => [...skipped, trackName])
+    setPlayTrack(false)
+    setAnswerFeedback('Skipped')
+    setAllTracks(current =>
+      current.filter(track => {
+        return track !== trackUri;
+      }))
+    setTimeout(()=>{
+      setAnswerFeedback(' ')
+      clearTimeout(playback)
+      showTracks()
+    },1000)
+  }
+
   function submitAnswer(event){
+
     const answer = event.target.value
 
     if(answer.length > 0 && answer.trim().toLowerCase() == trackName.toLowerCase()){
-      myInput.current.value = null
+      setGuessed(guessed => [...guessed, trackName])
+
+      setAnswered(true)
       setPlayTrack(false)
       setAnswerFeedback('Brawo, za 3 sekundy następna piosenka')
-      // setAllTracks(current =>
-      //   current.filter(track => {
-      //     return track !== trackUri;
-      //   }))
+      // removing guessed track from ' to be played' playlist
+      setAllTracks(current =>
+        current.filter(track => {
+          return track !== trackUri;
+        }))
+
       clearTimeout(playback)
+
+      setTimeout(()=>{
+        myInput.current.value = null
+      },10)
+
       setTimeout(() => {
         setAnswerFeedback(' ')
         showTracks(event)
@@ -348,7 +407,6 @@ function App() {
 
 
   function tamagotchi(answer){
-    setAnswer(answer)
     myInput.current.value = answer
     let fakeEvent = {
       target: {
@@ -372,7 +430,7 @@ function App() {
           <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}} >Sign in with Spotify</a>
 
           <Input spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} appStarted={appStarted} showTracks={showTracks} submitAnswer={submitAnswer} setSearchInput={setSearchInput}
-            myBtn={myBtn} myInput={myInput}/>
+            myBtn={myBtn} myInput={myInput} skipFunction={skip} />
 
           <div>
             {searchResult.map(track=>(

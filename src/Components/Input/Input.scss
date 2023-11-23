@@ -22,4 +22,9 @@ $spotifyDark: #191414;
   
     }
   }
-  
+
+
+.skipButton::after{
+  content:  '>>>'; 
+  margin-left: 2rem;
+}
