@@ -4,7 +4,6 @@ import { loginUrl, getTokenFromUrl } from './spotify';
 import SpotifyWebApi from 'spotify-web-api-js'
 import Player from './Components/Player/Player';
 import TrackSearchResult from './Components/TrackSearchResult/TrackSearchResult';
-import Zoisa from './zoisa';
 import Checkboxes from './Components/Checkboxes/Checkboxes';
 import Input from './Components/Input/Input';
 import Playlists_n_Albums from './Components/Playlist_n_Albums/Playlists_n_Albums';
@@ -35,7 +34,7 @@ function App() {
   const [guessed,setGuessed] = useState([])
   const [answered, setAnswered] = useState(false)
   const [trackNumber, setTrackNumber] = useState(1)
-
+  const [trackIndex, setTrackIndex] = useState(0)
 
   const myBtn = useRef(null)
   const myInput = useRef(null)
@@ -63,7 +62,7 @@ function App() {
     if(!searchInput) return setSearchResult([])
     if(!spotifyToken) return
     
-    spotify.searchTracks(searchInput).then(res =>{
+    spotify.searchTracks(searchInput, {limit: 4}).then(res =>{
       setSearchResult(res.tracks.items.map(track=>{
         const smallestAlbumImage = track.album.images.reduce((
           smallest, image) => {
@@ -419,7 +418,7 @@ function App() {
   return (
     <>
       <span id="#"></span>
-        <div style={selectedPlaylist ? { display: 'none' } : { display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }}>
+        <div style={selectedPlaylist ? { display: 'none' } : { display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }} className='info'>
           <h1>Choose one of your playlists and try to guess a song!</h1>
           <span>For each track you have 20 seconds of listening</span>
         </div>
@@ -441,11 +440,11 @@ function App() {
           <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}} >Sign in with Spotify</a>
 
           <Input spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} appStarted={appStarted} showTracks={showTracks} submitAnswer={submitAnswer} setSearchInput={setSearchInput}
-            myBtn={myBtn} myInput={myInput} skipFunction={skip}  toggleFocus={toggleFocus}/>
+            myBtn={myBtn} myInput={myInput} skipFunction={skip}  toggleFocus={toggleFocus} trackIndex={trackIndex} setTrackIndex={setTrackIndex}/>
 
           <div>
-            {searchResult.map(track=>(
-              <TrackSearchResult track={track} key={track.uri} trackFunction={tamagotchi}/>
+            {searchResult.map((track,i)=>(
+              <TrackSearchResult track={track} key={track.uri} trackFunction={tamagotchi} setTrackIndex={setTrackIndex} trackIndex={trackIndex} id={i+1} inputFocused={inputFocused} />
             ))}
           </div>
         </header>

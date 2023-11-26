@@ -4,7 +4,11 @@ const CLIENT_SECRET = secrets.clientSecret
 
 export const authEndpoint = 'https://accounts.spotify.com/authorize';
 
-const redirectUri = 'http://localhost:3000/'
+// deploy
+const redirectUri = 'https://witm-2e81a.web.app/'
+
+// lokalny developement
+// const redirectUri = 'http://localhost:3000/'
 
 const clientId = CLIENT_ID
 

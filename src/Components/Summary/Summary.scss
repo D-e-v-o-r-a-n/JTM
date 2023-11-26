@@ -1,3 +1,63 @@
+
+@media screen and (min-width: 1750px) {
+    #Summary{
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        gap: 35rem;
+    }
+    
+    #Guessed, #Skipped{
+        padding: 2rem;
+        border-radius: 15px;
+        display: grid;
+        grid-template-columns: 10rem 10rem 10rem ;
+        grid-template-rows: auto;
+        place-items: center;
+        row-gap: 1rem;
+        column-gap: 1rem;
+    }
+}
+@media screen and (max-width: 1750px) {
+    #Summary{
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        gap: 15rem;
+    }
+    
+    #Guessed, #Skipped{
+        padding: 2rem;
+        border-radius: 15px;
+        display: grid;
+        grid-template-columns: 10rem 10rem 10rem ;
+        grid-template-rows: auto;
+        place-items: center;
+        row-gap: 1rem;
+        column-gap: 1rem;
+    }
+}
+@media screen and (max-width: 1450px) {
+    #Summary{
+        display: block;
+
+        .sections{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 10rem;
+        }
+    }
+}
+@media screen and (max-width: 1000px){
+    #Guessed, #Skipped{
+        padding: 2rem;
+        border-radius: 15px;
+        display: block;
+    }
+}
+
 #WholeSummary{
     display: flex;
     justify-content: center;
@@ -6,11 +66,8 @@
 }
 
 #Summary{
-    display: flex;
-    justify-content: center;
-    align-items: start;
+
     color: white;
-    gap: 35rem;
     .sections{
         display: flex;
         justify-content: center;
@@ -20,16 +77,6 @@
     h1{
         margin-bottom: 2rem;
     }
-}
-#Guessed, #Skipped{
-    padding: 2rem;
-    border-radius: 15px;
-    display: grid;
-    grid-template-columns: 10rem 10rem 10rem ;
-    grid-template-rows: auto;
-    place-items: center;
-    row-gap: 1rem;
-    column-gap: 1rem;
 }
 
 

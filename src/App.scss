@@ -4,6 +4,14 @@ $spotifyGreen1: #1fdf64;
 $spotifyGreen2: #1ed760;
 $spotifyDark: #191414;
 
+@media screen and (max-width: 1000px) {
+  .info{   
+    h1{
+      width: 300px;
+    }
+  } 
+}
+
 body{
   box-sizing: border-box;
   background-color: #191414;

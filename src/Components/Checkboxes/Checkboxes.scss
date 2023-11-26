@@ -3,6 +3,14 @@ $spotifyGreen2: #1ed760;
 $spotifyDark: #191414;
 $spotifySub: #a7a7a7;
 
+@media screen and (max-width: 1000px) {
+  ul{
+    
+    li.dropdown {
+        width: 305px;
+      } 
+  }
+}
 
 @keyframes checkbox-spin {
     from {
