@@ -11,7 +11,6 @@ export default function Input({spotifyToken, selectedPlaylist, appStarted, submi
         <div style={(!spotifyToken ? { display: 'none' } : { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' })}>
             <div style={(!selectedPlaylist ? { display: 'none' } : {}) && (!appStarted ? { display: 'none' } : {})}>
                 <input type="text" name="" id="guessInput"  ref={myInput} onFocus={toggleFocus} onBlur={toggleFocus} onChange={event => { setSearchInput(event.target.value) }} onKeyDown={event => {
-                    // if(true){console.log()}
                     if(trackIndex == 0){
                         if (event.key === 'Enter') {
                             submitAnswer(event)

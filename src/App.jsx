@@ -8,6 +8,7 @@ import Checkboxes from './Components/Checkboxes/Checkboxes';
 import Input from './Components/Input/Input';
 import Playlists_n_Albums from './Components/Playlist_n_Albums/Playlists_n_Albums';
 import Summary from './Components/Summary/Summary';
+import ArtistSearchResult from './Components/ArtistSearchResult/ArtistSearchResult';
 
 const spotify = new SpotifyWebApi()
 
@@ -34,6 +35,7 @@ function App() {
   const [guessed,setGuessed] = useState([])
   const [answered, setAnswered] = useState(false)
   const [trackNumber, setTrackNumber] = useState(1)
+
   const [trackIndex, setTrackIndex] = useState(0)
 
   const myBtn = useRef(null)
@@ -42,9 +44,24 @@ function App() {
   const myH1 = useRef(null)
   const inputFocused = useRef(false)
   const counter = useRef(null)
+  const myDiv = useRef(null)
 
   const score = useRef()
   const guessingFinished = useRef(false)
+
+
+  const [query, setQuery] = useState()
+  const [ArtistSearchResultArray, setArtistSearchResultArray] = useState([])
+  const [UserSearchResultArray, setUserSearchResultArray] = useState([])
+
+  const artistInputFocused = useRef(false)
+  const [artistID,setArtistID] = useState()
+  const ARTISTID = useRef()
+  const USERID = useRef()
+  const typeInput = useRef(null)
+
+
+
 
   useEffect(() => {
     const _spotifyToken = getTokenFromUrl().access_token;
@@ -61,7 +78,7 @@ function App() {
   useEffect(()=>{
     if(!searchInput) return setSearchResult([])
     if(!spotifyToken) return
-    
+
     spotify.searchTracks(searchInput, {limit: 4}).then(res =>{
       setSearchResult(res.tracks.items.map(track=>{
         const smallestAlbumImage = track.album.images.reduce((
@@ -81,6 +98,43 @@ function App() {
     }).catch(err=>console.log(err))
   }, [searchInput, spotifyToken])
 
+
+  useEffect(()=>{
+    if(checkboxType == 'Artist'){
+      if(!query) return setArtistSearchResultArray([])
+      if(!spotifyToken) return
+  
+      ARTISTID.current = undefined
+      
+      spotify.searchArtists(query, {limit: 4}).then(res =>{
+        setArtistSearchResultArray(
+          res.artists.items.map(artist=>{
+          const smallestImage = artist.images.reduce((
+            smallest, image) => {
+              if(image.height < smallest.height) return image
+              return smallest
+            }, artist.images[0])
+          return{
+            name: artist.name,
+            id: artist.id,
+            imageUrl: smallestImage.url
+          }
+        })
+      )
+      console.log(ArtistSearchResultArray)
+  
+      }).catch(err=>console.log(err))
+    }
+  }, [query,checkboxType])
+
+
+
+
+
+
+
+
+
   useEffect(()=>{
     if(trackName) setAnswer(trackName)
   },[trackName])
@@ -92,6 +146,7 @@ function App() {
 
   useEffect(()=>{
     if(spotifyToken) showPlaylist()
+    ARTISTID.current = 'x'
   },[spotifyToken,checkboxType])
   
   useEffect(()=>{
@@ -105,6 +160,7 @@ function App() {
   useEffect(()=>{
     if(appStarted) myBtn.current.style='display: none'
   }, [appStarted])
+
 
   async function showPlaylist() {
     switch(checkboxType){
@@ -120,13 +176,18 @@ function App() {
          
       case 'Artist':
           // to działa na taco
-         spotify.getArtistAlbums('7CJgLPEqiIRuneZSolpawQ',{limit: 50, include_groups: 'album'})
-           .then(function (data) {
+        console.log(artistID, 'artists id')
+        console.log(ARTISTID.current, 'ARTIST id')
+        spotify.getArtistAlbums(ARTISTID.current,{limit: 50, include_groups: 'album'})
+          .then(function (data) {
              setPlaylists(data.items)
-           }, function (err) {
-             console.error(err);
+          }, function (err) {
+            console.error(err);
            });
-           break;
+
+
+          ARTISTID.current = undefined
+          break;
 
       case 'User':
          spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna',{limit: 50})
@@ -330,7 +391,11 @@ function App() {
   function toggleFocus(){
     inputFocused.current = !inputFocused.current
     // console.log(inputFocused.current)
-}
+  }
+  function toggleArtistFocus(){
+    artistInputFocused.current = !artistInputFocused.current
+    console.log(artistInputFocused.current, 'artist input focused')
+  }
 
   function skip(){
     // removing skipped track from ' to be played' playlist
@@ -405,7 +470,16 @@ function App() {
     setCheckboxType(event.target.text)
   }
 
-
+ 
+  function submitArtist(id){
+    console.log(typeInput.current)
+    if(typeInput.current != undefined ){ typeInput.current.value = "" };
+    setArtistID(id)
+    ARTISTID.current = id
+    showPlaylist()
+    ARTISTID.current = 'x'
+    }
+  
   function tamagotchi(answer){
     myInput.current.value = answer
     let fakeEvent = {
@@ -427,15 +501,25 @@ function App() {
         setCheckboxType={setCheckboxType} setAnswered={setAnswered} score={score} setTrackNumber={setTrackNumber} setPlayTrack={setPlayTrack}
         />
         
-        <Checkboxes spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} checkboxFunction={onlyOne}/>
+        <Checkboxes spotifyToken={spotifyToken} selectedPlaylist={selectedPlaylist} checkboxFunction={onlyOne} checkboxType={checkboxType} setQuery={setQuery} toggleArtistFocus={toggleArtistFocus} submitArtist={submitArtist} typeInput={typeInput}
+        />
 
+        <div  style={selectedPlaylist ? {display: 'none'} :{}}>
+          <div style={ARTISTID.current == 'x' ? {display:'none'}:{}}>
+            <div className='artistSearch' style={checkboxType == 'Artist' ? {} : {display: 'none'}}>
+              {ArtistSearchResultArray.map((artist,i)=>(
+                <ArtistSearchResult artist={artist} id={i} artistFunction={submitArtist} />
+              ))}
+            </div> 
+          </div>
+        </div>
         <header className="App-header" style={guessingFinished.current ? {display: 'none'}:{}}>
           
           <div id='feedback' style={appStarted ? {} : {visibility:'hidden'}}>
             <h1 ref={myH1} >{answerFeedback}</h1>
             <h1 ref={counter}>{`Track ${trackNumber} out of ${stateTracks.length}`}</h1>
           </div>
-
+          
 
           <a href={loginUrl} id='signInId' style={spotifyToken ? {display: 'none'} : {}} >Sign in with Spotify</a>
 

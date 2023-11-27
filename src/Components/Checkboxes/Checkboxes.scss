@@ -83,3 +83,25 @@ ul{
 li.dropdown:hover{
   border: 1px solid $spotifyGreen1;
 }
+
+#typeInput{
+  border: 1px solid gray;
+  border-radius: 10px;
+  color: white;
+  background: none;
+  width: 350px;
+  height: 50px;
+  margin: 2rem;
+  margin-top: 10rem;
+  padding: 10px;
+  outline: none;
+  font-size: 1.6rem;
+
+  &:focus{
+    border: 1px solid $spotifySub;
+    box-shadow: 0px 0px 10px 1px $spotifySub;
+    transition: 1s;
+
+  }
+}
+

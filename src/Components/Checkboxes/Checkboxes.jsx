@@ -1,23 +1,13 @@
-import React, { useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
+
 import './Checkboxes.scss'
 
-export default function Checkboxes({selectedPlaylist, spotifyToken, checkboxFunction}){
+export default function Checkboxes({selectedPlaylist, spotifyToken, checkboxFunction,checkboxType, setQuery, toggleArtistFocus, typeInput}){
 
-
-
+  
     return(
         <div  style={selectedPlaylist ? {display: 'none'} :{}} className="wholeCheckboxes">
         <div className='checkboxes' style={!spotifyToken ? {display: 'none'} : {}}>
-          {/* <div>
-            <input type="checkbox" name="check" attributes="Me"  onClick={event => checkboxFunction(event)}></input><span>Me</span>
-          </div>
-          <div>
-            <input type="checkbox" name="check" attributes="Artist" onClick={event => checkboxFunction(event)}></input><span>Artist</span>
-          </div>
-          <div>
-            <input type="checkbox" name="check" attributes="User"  onClick={event => checkboxFunction(event)}></input><span>User</span>
-          </div> */}
-
           <ul>
             <li class="dropdown">
               <h1 class="dropdown">Hover to select type</h1>
@@ -28,6 +18,9 @@ export default function Checkboxes({selectedPlaylist, spotifyToken, checkboxFunc
               </div>
             </li>
           </ul>
+          {checkboxType == 'Artist' || checkboxType == 'User' ?   
+          <input id="typeInput" ref={typeInput} onChange={event => setQuery(event.target.value)} onFocus={toggleArtistFocus} onBlur={toggleArtistFocus}/> :
+          null}
         </div>
       </div>
     )
