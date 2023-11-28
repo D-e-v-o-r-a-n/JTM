@@ -5,7 +5,6 @@ export default function TrackSearchResult({track, trackFunction, id,trackIndex, 
     const element = useRef(null)
 
     useEffect(()=>{
-        console.log(element)
         if(inputFocused){
             if(element.current.id != trackIndex){
                 element.current.className = 'trackSearchResult'

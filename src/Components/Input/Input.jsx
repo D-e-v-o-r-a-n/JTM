@@ -1,11 +1,7 @@
-import React,{useEffect} from "react"
+import React from "react"
 import './Input.scss'
 
 export default function Input({spotifyToken, selectedPlaylist, appStarted, submitAnswer, skipFunction, showTracks, setSearchInput, myBtn, myInput,toggleFocus,trackIndex, setTrackIndex}){
-
-    useEffect(()=>{
-        console.log(trackIndex)
-    },[trackIndex])
 
     return(
         <div style={(!spotifyToken ? { display: 'none' } : { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '2rem' })}>

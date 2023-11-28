@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React from "react"
 
 import './Checkboxes.scss'
 
@@ -18,7 +18,7 @@ export default function Checkboxes({selectedPlaylist, spotifyToken, checkboxFunc
               </div>
             </li>
           </ul>
-          {checkboxType == 'Artist' || checkboxType == 'User' ?   
+          {checkboxType == 'Artist' ?   
           <input id="typeInput" ref={typeInput} onChange={event => setQuery(event.target.value)} onFocus={toggleArtistFocus} onBlur={toggleArtistFocus}/> :
           null}
         </div>

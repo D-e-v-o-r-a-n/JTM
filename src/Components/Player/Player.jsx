@@ -13,7 +13,7 @@ export default function Player({accessToken, trackUri, playTrack}){
             }}
             hideCoverArt={true}
             hideAttribution={true}
-            initialVolume={0.1}
+            initialVolume={1}
             play={playTrack}
             token={accessToken}
             uris={trackUri ? [trackUri]: []}

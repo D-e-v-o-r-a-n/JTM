@@ -452,6 +452,8 @@ function App() {
     else{
       myH1.current.style.color = 'yellow'
       setAnswerFeedback("Wrong!")
+      console.log(trackName)
+      console.log(answer)
       myInput.current.value = null
       setTimeout(()=>{
         myH1.current.style.color = 'white'
@@ -506,11 +508,11 @@ function App() {
 
         <div  style={selectedPlaylist ? {display: 'none'} :{}}>
           <div style={ARTISTID.current == 'x' ? {display:'none'}:{}}>
-            <div className='artistSearch' style={checkboxType == 'Artist' ? {} : {display: 'none'}}>
-              {ArtistSearchResultArray.map((artist,i)=>(
-                <ArtistSearchResult artist={artist} id={i} artistFunction={submitArtist} />
-              ))}
-            </div> 
+              <div className='artistSearch' style={checkboxType != 'Artist' ? {display: 'none'} : {}}>
+                {ArtistSearchResultArray.map((artist)=>(
+                  <ArtistSearchResult artist={artist}  artistFunction={submitArtist} />
+                ))}
+            </div>
           </div>
         </div>
         <header className="App-header" style={guessingFinished.current ? {display: 'none'}:{}}>
