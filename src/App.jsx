@@ -16,7 +16,6 @@ function App() {
   const [spotifyToken, setSpotifyToken] = useState("");
   const [playlists, setPlaylists] = useState([]);
   const [trackName, setTrackName] = useState();
-  const [trackImage, setTrackImage] = useState();
   const [trackUri, setTrackUri] = useState();
   const [trackPreview, setTrackPreview] = useState();
   const [selectedPlaylist,setSelectedPlaylist] = useState(false);
@@ -52,7 +51,6 @@ function App() {
 
   const [query, setQuery] = useState()
   const [ArtistSearchResultArray, setArtistSearchResultArray] = useState([])
-  const [UserSearchResultArray, setUserSearchResultArray] = useState([])
 
   const artistInputFocused = useRef(false)
   const [artistID,setArtistID] = useState()
@@ -175,7 +173,6 @@ function App() {
          break;
          
       case 'Artist':
-          // to działa na taco
         console.log(artistID, 'artists id')
         console.log(ARTISTID.current, 'ARTIST id')
         spotify.getArtistAlbums(ARTISTID.current,{limit: 50, include_groups: 'album'})
@@ -189,14 +186,14 @@ function App() {
           ARTISTID.current = undefined
           break;
 
-      case 'User':
-         spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna',{limit: 50})
-           .then(function (data) {
-             setPlaylists(data.items)
-           }, function (error) {
-             console.log(error)
-           })
-           break;
+      // case 'User':
+      //    spotify.getUserPlaylists('31vbfs3bupbisid7zcbomx633bna',{limit: 50})
+      //      .then(function (data) {
+      //        setPlaylists(data.items)
+      //      }, function (error) {
+      //        console.log(error)
+      //      })
+      //      break;
       default:
         console.log("Unexpected value in showPlaylist swtich case")
     }

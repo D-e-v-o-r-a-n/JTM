@@ -14,7 +14,7 @@ export default function Checkboxes({selectedPlaylist, spotifyToken, checkboxFunc
               <div class="dropdown-content">
                 <a href="#" onClick={event => checkboxFunction(event)}>Me</a>
                 <a href="#" onClick={event => checkboxFunction(event)}>Artist</a>
-                <a href="#" onClick={event => checkboxFunction(event)}>User</a>
+                {/* <a href="#" onClick={event => checkboxFunction(event)}>User</a> */}
               </div>
             </li>
           </ul>
