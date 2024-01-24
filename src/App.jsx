@@ -494,6 +494,7 @@ function App() {
         <div style={selectedPlaylist ? { display: 'none' } : { display: 'flex', flexDirection: 'column', color: 'white', justifyContent: 'center', alignItems: 'center', padding: '0px' }} className='info'>
           <h1>Choose one of your playlists and try to guess a song!</h1>
           <span>For each track you have 20 seconds of listening</span>
+          <h5>Considering that it is a small app, bear in mind that you would have to be registered by creator, for it to work properly</h5>
         </div>
         <Summary guessingFinished={guessingFinished} guessed={guessed} skipped={skipped} setGuessed={setGuessed} setSkipped={setSkipped} stateTracks={stateTracks} setAppStarted={setAppStarted} setSelectedPlaylist={setSelectedPlaylist}
         spotifyToken={spotifyToken} setPlaylists={setPlaylists} setSearchResult={setSearchResult} setTracksPlayed={setTracksPlayed} setStateTracks={setStateTracks} setAllTracks={setAllTracks}

@@ -13,7 +13,7 @@ export default function Playlists_n_Albums({spotifyToken, selectedPlaylist, sele
                   <a href="#">
                         <div id='playlist' property={playlist.id} onClick={event => select(event)}>
                             <span>{playlist.name}</span>
-                            <img src={playlist.images[0].url} />
+                            <img src={playlist.images[0]?.url} />
                         </div>
                   </a>
                 )
